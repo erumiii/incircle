@@ -1,5 +1,9 @@
 <x-app-layout>
-    <div class="flex flex-col" style="min-height: calc(100vh - 4rem);">
+    <x-slot name="bodyClass">overflow-hidden</x-slot>
+
+    {{-- Halaman chat terkunci pada tinggi viewport: panel input tetap diam,
+        hanya area pesan hitam yang scroll (perbaikan perilaku scroll). --}}
+    <div class="flex flex-col" style="height: calc(100vh - 4rem); overflow: hidden;">
         {{-- Header circle --}}
         <div class="border-b border-sky-200/50" style="background: var(--bg-header);">
             <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center gap-3">
@@ -47,15 +51,31 @@
         </div>
 
         {{-- Area percakapan (DESIGN.md 6.4/6.5/8: hitam pekat, avatar + bubble) --}}
-        <div class="chat-bg flex-1 overflow-y-auto">
-            <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6" style="margin-left: 0;">
+        <div class="chat-bg flex-1 overflow-y-auto" id="chat-scroll" data-circle-id="{{ $circle->id }}">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6" style="margin-left: 0;" id="chat-messages">
 
                 @if (session('status') === 'circle-updated')
                     <p class="mb-4 text-sm" style="color: var(--text-muted);">Circle diperbarui.</p>
                 @endif
 
-                @forelse ($messages as $message)
+                {{-- Template bubble realtime: markup identik dengan render server --}}
+                <template id="chat-bubble-template">
                     <div class="flex items-start gap-3 mb-3 bubble-in" style="margin-left: 100px;">
+                        <div class="flex-none text-center">
+                            <div class="avatar" aria-hidden="true"></div>
+                            <div class="avatar-name"></div>
+                        </div>
+                        <div class="flex-1 min-w-0 pt-2">
+                            <div class="bubble">
+                                <span></span>
+                            </div>
+                            <p class="mt-1 text-xs" style="color: var(--text-muted); letter-spacing: 0;"></p>
+                        </div>
+                    </div>
+                </template>
+
+                @forelse ($messages as $message)
+                    <div class="flex items-start gap-3 mb-3" data-message-id="{{ $message->id }}" style="margin-left: 100px;">
                         @php
                             $isMine = $message->sender_id === auth()->id();
                             $initial = $message->sender?->username ? strtoupper(substr($message->sender->username, 0, 1)) : '?';
@@ -76,7 +96,7 @@
                         </div>
                     </div>
                 @empty
-                    <p class="text-center py-10" style="color: var(--text-muted);">
+                    <p class="text-center py-10" id="chat-empty" style="color: var(--text-muted);">
                         belum ada pesan. mulai obrolan pertama di circle ini.
                     </p>
                 @endforelse
@@ -89,4 +109,37 @@
             </div>
         </div>
     </div>
+
+    {{-- Listener realtime: pesan baru dari anggota lain langsung tampil --}}
+    <script type="module">
+        const container = document.getElementById('chat-messages');
+        const scroller = document.getElementById('chat-scroll');
+        const template = document.getElementById('chat-bubble-template');
+        if (window.Echo && container && template) {
+            window.Echo.private(`circle.${scroller.dataset.circleId}`)
+                .listen('.message.sent', (e) => {
+                    // pesan pengirim sendiri muncul via reload form POST — lewati duplikat
+                    if (e.sender_id === {{ auth()->id() }}) return;
+                    if (document.querySelector(`[data-message-id="${e.id}"]`)) return;
+
+                    const empty = document.getElementById('chat-empty');
+                    if (empty) empty.remove();
+
+                    const node = template.content.firstElementChild.cloneNode(true);
+                    node.dataset.messageId = e.id;
+                    const isMine = e.sender_id === {{ auth()->id() }};
+                    node.querySelector('.avatar').textContent = (e.username || '?').charAt(0).toUpperCase();
+                    node.querySelector('.avatar-name').textContent = e.username || 'unknown';
+                    const bubble = node.querySelector('.bubble');
+                    if (isMine) bubble.classList.add('bubble--grey');
+                    bubble.querySelector('span').textContent = e.message;
+                    node.querySelector('p.mt-1').textContent = new Date(e.created_at)
+                        .toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                        .replace(/\./g, ':');
+
+                    container.appendChild(node);
+                    scroller.scrollTop = scroller.scrollHeight;
+                });
+        }
+    </script>
 </x-app-layout>

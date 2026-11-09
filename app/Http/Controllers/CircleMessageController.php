@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\MessageSent;
+
 use App\Http\Requests\StoreMessageRequest;
 use App\Models\ChatGroup;
 use Illuminate\Http\RedirectResponse;
@@ -19,10 +21,13 @@ class CircleMessageController extends Controller
             abort(404);
         }
 
-        $circle->messages()->create([
+        $message = $circle->messages()->create([
             'sender_id' => $request->user()->id,
             'message' => $request->input('message'),
         ]);
+
+        // realtime: broadcast ke anggota lain yang sedang membuka chat ini
+        MessageSent::dispatch($message);
 
         return redirect()->route('circles.show', ['circle' => $circle->id, 'page' => $request->input('page')]);
     }

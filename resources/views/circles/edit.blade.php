@@ -52,7 +52,7 @@
 
                 <div>
                     <x-input-label for="confirm_name" :value="__('Ketik nama circle untuk konfirmasi')" />
-                    <x-text-input id="confirm_name" name="confirm_name" type="text" class="mt-1 block w-full" required />
+                    <x-text-input id="confirm_name" name="confirm_name" type="text" class="mt-1 block w-full" required placeholder="{{ $circle->group_name }}" />
                     <x-input-error :messages="$errors->get('confirm_name')" class="mt-2" />
                 </div>
 
