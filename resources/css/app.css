@@ -1,0 +1,199 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   inCircle — Glossy Aero / Web 2.0 + Retro Chat (DESIGN.md)
+   Dipakai di latar terang (#EDF5F8) dan latar chat hitam.
+   ============================================================ */
+
+:root {
+    /* netral & latar */
+    --bg-page: #EDF5F8;
+    --bg-chat: #000000;
+    --bg-header: #ECECEC;
+    --surface-input: #FFFFFF;
+    --text-on-dark: #F2F2F2;
+    --text-on-light: #1A1A1A;
+    --text-muted: #C9C9C9;
+    --border-input: #B5B5B5;
+
+    /* radius */
+    --radius-pill: 999px;
+    --radius-bubble: 14px;
+    --radius-input: 4px;
+    --radius-avatar: 4px;
+
+    /* shadow */
+    --shadow-orb: 0 4px 10px rgba(20, 40, 90, .30);
+    --shadow-pill: 0 3px 8px rgba(0, 0, 0, .25);
+    --shadow-glow: 0 0 14px rgba(120, 180, 255, .35);
+}
+
+/* ---------- Orb (tombol bulat ikon) ---------- */
+.orb {
+    --top: #CFE3FF; --mid: #3F62A8; --bottom: #38D0F0; --border: #0A1A6E;
+    position: relative;
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    border: 3px solid var(--border);
+    background: linear-gradient(to bottom, var(--top) 0%, var(--mid) 50%, var(--bottom) 100%);
+    box-shadow: var(--shadow-orb), inset 0 -4px 8px rgba(255, 255, 255, .25);
+    display: grid; place-items: center;
+    color: #F5F5F5; cursor: pointer;
+    transition: filter .15s, transform .1s, box-shadow .15s;
+}
+.orb::before {
+    content: ""; position: absolute;
+    top: 5%; left: 10%; right: 10%; height: 45%;
+    border-radius: 50% 50% 45% 45% / 80% 80% 30% 30%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, .85), rgba(255, 255, 255, 0));
+    pointer-events: none;
+}
+.orb svg { width: 55%; height: 55%; }
+.orb--sm { width: 48px; height: 48px; }
+.orb--red    { --top:#F0B8B0; --mid:#8A1A14; --bottom:#F4803C; --border:#6E0A0A; }
+.orb--green  { --top:#BFE3C4; --mid:#2E8A3C; --bottom:#38F050; --border:#0B6B1C; }
+.orb--purple { --top:#F0C4F8; --mid:#7A2A8A; --bottom:#E83CF8; --border:#5A0F6E; }
+.orb--olive  { --top:#F0F0C0; --mid:#8A8A2A; --bottom:#E8F84A; --border:#6A6A0A; }
+.orb--pink   { --top:#F8C4DC; --mid:#A02A62; --bottom:#F83C9A; --border:#7A0F3A; }
+.orb--amber  { --top:#E0C8A0; --mid:#8A5A20; --bottom:#F8A43C; --border:#6A420A; }
+.orb--teal   { --top:#C4F0F0; --mid:#2A8A90; --bottom:#3CF8E0; --border:#0A6A6E; }
+
+/* ---------- Pill (tombol aksi berlabel) ---------- */
+.pill {
+    --c1: #5CE03C; --c2: #22B822; --bd: #3CC83C;
+    position: relative; overflow: hidden;
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 140px; height: 44px; padding: 0 32px;
+    border-radius: var(--radius-pill);
+    border: 2px solid var(--bd);
+    background: linear-gradient(to bottom, var(--c1), var(--c2));
+    color: #fff; font: 500 19px/1 Inter, "Segoe UI", sans-serif;
+    box-shadow: var(--shadow-pill);
+    cursor: pointer; transition: filter .15s, transform .1s;
+}
+.pill::before {
+    content: ""; position: absolute;
+    top: 4%; left: 4%; right: 4%; height: 46%;
+    border-radius: var(--radius-pill);
+    background: linear-gradient(to bottom, rgba(255, 255, 255, .75), rgba(255, 255, 255, .05));
+    pointer-events: none;
+}
+.pill--decline  { --c1:#F03030; --c2:#D80C0C; --bd:#E01010; }
+.pill--follow   { --c1:#3A86F0; --c2:#1060E0; --bd:#1A6EE8; }
+.pill--download { --c1:#F040F0; --c2:#D010D8; --bd:#C010E8; }
+
+/* ---------- Chat ---------- */
+.chat-bg { background: var(--bg-chat); }
+
+.bubble {
+    position: relative;
+    max-width: 70%; padding: 10px 18px;
+    border: 3px solid #fff; border-radius: var(--radius-bubble);
+    background: linear-gradient(to bottom, #8DB862, #6A9440);
+    color: var(--text-on-dark);
+    font: 400 15px/1.4 Verdana, Tahoma, sans-serif;
+    letter-spacing: .12em;
+    overflow-wrap: anywhere;
+}
+.bubble--grey { background: linear-gradient(to bottom, #8E8A8C, #6E6A6C); }
+.bubble::before {
+    content: ""; position: absolute; left: -14px; top: 14px;
+    border: 8px solid transparent; border-right: 10px solid #fff;
+}
+
+.avatar {
+    width: 52px; height: 52px; flex: none;
+    border-radius: var(--radius-avatar);
+    background: linear-gradient(to bottom, #B5B5B5, #6E6A6C);
+    color: #F2F2F2;
+    display: grid; place-items: center;
+    font: 400 20px/1 Verdana, sans-serif;
+}
+.avatar-name {
+    text-align: center; margin-top: 4px;
+    color: var(--text-muted);
+    font: 400 13px/1.2 Verdana, sans-serif;
+    letter-spacing: 0;
+}
+
+.chat-panel {
+    background: var(--bg-header);
+    padding: 16px;
+}
+.chat-input {
+    width: 100%; height: 64px;
+    background: var(--surface-input);
+    border: 1px solid var(--border-input);
+    border-radius: var(--radius-input);
+    padding: 8px 12px;
+    font: 400 15px/1.4 Verdana, sans-serif;
+    color: #000;
+    resize: none;
+}
+
+.btn-post {
+    position: relative; overflow: hidden;
+    min-width: 185px; height: 34px; padding: 0 16px;
+    border-radius: var(--radius-pill);
+    border: 2px solid #555;
+    background: linear-gradient(to bottom, #FFFFFF, #FAFAEA);
+    color: #000; font: 700 12px/1 Verdana, sans-serif;
+    letter-spacing: .05em; text-transform: uppercase;
+    cursor: pointer; transition: filter .15s, transform .1s;
+}
+.btn-post::before {
+    content: ""; position: absolute;
+    top: 4%; left: 4%; right: 4%; height: 45%;
+    border-radius: var(--radius-pill);
+    background: linear-gradient(to bottom, rgba(255, 255, 255, .9), rgba(255, 255, 255, .1));
+    pointer-events: none;
+}
+
+/* ---------- Kartu / panel di halaman terang ---------- */
+.glass-card {
+    background: rgba(255, 255, 255, .75);
+    border: 2px solid rgba(58, 134, 240, .35);
+    border-radius: 18px;
+    box-shadow: 0 4px 14px rgba(20, 40, 90, .12);
+}
+
+/* ---------- State interaksi ---------- */
+.orb:hover, .pill:hover, .btn-post:hover {
+    filter: brightness(1.12);
+    box-shadow: var(--shadow-glow);
+}
+.orb:active, .pill:active, .btn-post:active {
+    transform: translateY(1px);
+    filter: brightness(.92);
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, .35);
+}
+.orb:focus-visible, .pill:focus-visible, .btn-post:focus-visible,
+.chat-input:focus-visible {
+    outline: 2px solid #FFFFFF;
+    outline-offset: 2px;
+    box-shadow: var(--shadow-glow);
+}
+.orb:disabled, .pill:disabled {
+    filter: saturate(.2) brightness(1.1);
+    opacity: .6; cursor: not-allowed;
+}
+
+/* ---------- Animasi masuk bubble ---------- */
+@keyframes bubble-in {
+    from { opacity: 0; transform: translateX(-12px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+.bubble-in { animation: bubble-in 150ms ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+    .bubble-in { animation: none; }
+    .orb, .pill, .btn-post { transition: none; }
+}
+
+/* ---------- Responsif ---------- */
+@media (max-width: 480px) {
+    .orb { width: 48px; height: 48px; }
+    .pill { width: 100%; }
+}
