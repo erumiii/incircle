@@ -32,13 +32,16 @@
 
 /* ---------- Orb (tombol bulat ikon) ---------- */
 .orb {
-    --top: #CFE3FF; --mid: #3F62A8; --bottom: #38D0F0; --border: #0A1A6E;
+    /* struktur gradient 4-stop sama seperti .pill: terang → tengah → pekat → kilau bawah */
+    --c1: #D6E8FF; --c2: #8DBBF8; --c3: #3F62A8; --c4: #38D0F0;
+    --bd: #0A1A6E;
     position: relative;
     width: 64px; height: 64px;
     border-radius: 50%;
-    border: 3px solid var(--border);
-    background: linear-gradient(to bottom, var(--top) 0%, var(--mid) 50%, var(--bottom) 100%);
-    box-shadow: var(--shadow-orb), inset 0 -4px 8px rgba(255, 255, 255, .25);
+    border: 2px solid var(--bd);
+    background: linear-gradient(to bottom,
+        var(--c1) 0%, var(--c2) 45%, var(--c3) 75%, var(--c4) 100%);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .18), 0 8px 20px rgba(0, 0, 0, .10);
     display: grid; place-items: center;
     color: #F5F5F5; cursor: pointer;
     transition: filter .15s, transform .1s, box-shadow .15s;
@@ -52,37 +55,56 @@
 }
 .orb svg { width: 55%; height: 55%; }
 .orb--sm { width: 48px; height: 48px; }
-.orb--red    { --top:#F0B8B0; --mid:#8A1A14; --bottom:#F4803C; --border:#6E0A0A; }
-.orb--green  { --top:#BFE3C4; --mid:#2E8A3C; --bottom:#38F050; --border:#0B6B1C; }
-.orb--purple { --top:#F0C4F8; --mid:#7A2A8A; --bottom:#E83CF8; --border:#5A0F6E; }
-.orb--olive  { --top:#F0F0C0; --mid:#8A8A2A; --bottom:#E8F84A; --border:#6A6A0A; }
-.orb--pink   { --top:#F8C4DC; --mid:#A02A62; --bottom:#F83C9A; --border:#7A0F3A; }
-.orb--amber  { --top:#E0C8A0; --mid:#8A5A20; --bottom:#F8A43C; --border:#6A420A; }
-.orb--teal   { --top:#C4F0F0; --mid:#2A8A90; --bottom:#3CF8E0; --border:#0A6A6E; }
+.orb--red    { --c1:#FFD9D5; --c2:#F0968E; --c3:#8A1A14; --c4:#F4803C; --bd:#6E0A0A; }
+.orb--green  { --c1:#C8F0B8; --c2:#6FCF5A; --c3:#2E8A3C; --c4:#38F050; --bd:#0B6B1C; }
+.orb--purple { --c1:#F0C4F8; --c2:#C46CD0; --c3:#7A2A8A; --c4:#E83CF8; --bd:#5A0F6E; }
+.orb--olive  { --c1:#F0F0C0; --c2:#D0D060; --c3:#8A8A2A; --c4:#E8F84A; --bd:#6A6A0A; }
+.orb--pink   { --c1:#F8C4DC; --c2:#E06AA8; --c3:#A02A62; --c4:#F83C9A; --bd:#7A0F3A; }
+.orb--amber  { --c1:#E0C8A0; --c2:#D09040; --c3:#8A5A20; --c4:#F8A43C; --bd:#6A420A; }
+.orb--teal   { --c1:#C4F0F0; --c2:#70C8C0; --c3:#2A8A90; --c4:#3CF8E0; --bd:#0A6A6E; }
 
-/* ---------- Pill (tombol aksi berlabel) ---------- */
+/* ---------- Pill (tombol aksi berlabel) — referensi: tombol download Aqua
+     primer = biru glossy (teks gelap), sekunder = abu glossy (teks gelap) ---------- */
 .pill {
-    --c1: #5CE03C; --c2: #22B822; --bd: #3CC83C;
+    /* varian primer (biru) */
+    --c1: #D6E8FF; --c2: #8DBBF8; --c3: #6FA9F4; --c4: #8CBFFA;
+    --bd: #5A5BD0;
+    --txt: #111111;
     position: relative; overflow: hidden;
-    display: inline-flex; align-items: center; justify-content: center;
-    min-width: 140px; height: 44px; padding: 0 32px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    min-width: 140px; height: 44px; padding: 0 28px;
     border-radius: var(--radius-pill);
     border: 2px solid var(--bd);
-    background: linear-gradient(to bottom, var(--c1), var(--c2));
-    color: #fff; font: 500 19px/1 Inter, "Segoe UI", sans-serif;
-    box-shadow: var(--shadow-pill);
+    background: linear-gradient(to bottom,
+        var(--c1) 0%, var(--c2) 45%, var(--c3) 75%, var(--c4) 100%);
+    color: var(--txt);
+    font: 500 17px/1 Inter, "Segoe UI", sans-serif;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .18), 0 8px 20px rgba(0, 0, 0, .10);
     cursor: pointer; transition: filter .15s, transform .1s;
+    text-decoration: none;
 }
 .pill::before {
     content: ""; position: absolute;
-    top: 4%; left: 4%; right: 4%; height: 46%;
+    top: 4%; left: 4%; right: 4%; height: 45%;
     border-radius: var(--radius-pill);
-    background: linear-gradient(to bottom, rgba(255, 255, 255, .75), rgba(255, 255, 255, .05));
+    background: linear-gradient(to bottom, rgba(255, 255, 255, .85), rgba(255, 255, 255, .05));
     pointer-events: none;
 }
-.pill--decline  { --c1:#F03030; --c2:#D80C0C; --bd:#E01010; }
-.pill--follow   { --c1:#3A86F0; --c2:#1060E0; --bd:#1A6EE8; }
-.pill--download { --c1:#F040F0; --c2:#D010D8; --bd:#C010E8; }
+/* sekunder: abu glossy seperti tombol "download for windows" */
+.pill--follow {
+    --c1: #FFFFFF; --c2: #F0F0F0; --c3: #E6E6E6; --c4: #DADADA;
+    --bd: #888888;
+}
+/* merah destruktif: gradien lebih terang agar teks gelap (konsisten) tetap terbaca */
+.pill--decline {
+    --c1: #FFD9D5; --c2: #F0968E; --c3: #E8564C; --c4: #F0968E;
+    --bd: #A01010;
+}
+/* hijau aksi utama chat */
+.pill--download {
+    --c1: #C8F0B8; --c2: #6FCF5A; --c3: #3CA828; --c4: #6FCF5A;
+    --bd: #2E7A1A;
+}
 
 /* ---------- Chat ---------- */
 .chat-bg { background: var(--bg-chat); }
@@ -134,20 +156,21 @@
 }
 
 .btn-post {
+    /* sama seperti .pill sekunder (abu glossy referensi) tapi lebih kecil */
     position: relative; overflow: hidden;
-    min-width: 185px; height: 34px; padding: 0 16px;
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 120px; height: 38px; padding: 0 22px;
     border-radius: var(--radius-pill);
-    border: 2px solid #555;
-    background: linear-gradient(to bottom, #FFFFFF, #FAFAEA);
-    color: #000; font: 700 12px/1 Verdana, sans-serif;
-    letter-spacing: .05em; text-transform: uppercase;
+    border: 2px solid #888;
+    background: linear-gradient(to bottom, #FFFFFF, #F0F0F0 45%, #E6E6E6 75%, #DADADA);
+    color: #111; font: 500 14px/1 Inter, "Segoe UI", sans-serif;
     cursor: pointer; transition: filter .15s, transform .1s;
 }
 .btn-post::before {
     content: ""; position: absolute;
     top: 4%; left: 4%; right: 4%; height: 45%;
     border-radius: var(--radius-pill);
-    background: linear-gradient(to bottom, rgba(255, 255, 255, .9), rgba(255, 255, 255, .1));
+    background: linear-gradient(to bottom, rgba(255, 255, 255, .9), rgba(255, 255, 255, .05));
     pointer-events: none;
 }
 
