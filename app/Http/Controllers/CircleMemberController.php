@@ -47,7 +47,7 @@ class CircleMemberController extends Controller
         }
 
         if ($member->role === 'admin') {
-            return back()->with('error', 'Admin tidak dapat dikeluarkan.');
+            return back()->with('error', 'Admins cannot be removed.');
         }
 
         $member->update(['left_at' => now()]);

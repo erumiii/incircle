@@ -125,6 +125,18 @@
     background: linear-gradient(to right, #5A7AD8, #58E0FF);
 }
 
+/* Notifikasi bergabung: teks putih ▶▶ ala ruang chat retro (DESIGN.md 8) */
+.join-notice {
+    color: var(--text-on-dark);
+    font: 400 14px/1.4 Verdana, Tahoma, sans-serif;
+    letter-spacing: .12em;
+    animation: bubble-in 150ms ease-out;
+}
+.join-notice::before {
+    content: "▶▶";
+    margin-right: 6px;
+}
+
 .bubble {
     position: relative;
     max-width: 70%; padding: 10px 18px;
@@ -133,12 +145,20 @@
     color: var(--text-on-dark);
     font: 400 15px/1.4 Verdana, Tahoma, sans-serif;
     letter-spacing: .12em;
+    margin-left: 10px;
     overflow-wrap: anywhere;
 }
 .bubble--grey { background: linear-gradient(to bottom, #8E8A8C, #6E6A6C); }
+/* Ekor bubble: path dengan fill pangkal penuh sampai tepi kanan SVG;
+   digeser overlap +2px ke dalam bubble agar menimpa border putih kiri. */
 .bubble::before {
-    content: ""; position: absolute; left: -14px; top: 14px;
-    border: 8px solid transparent; border-right: 10px solid #fff;
+    content: ""; position: absolute; left: -16px; top: 10px;
+    width: 16px; height: 20px;
+    background: no-repeat left center / 100% 100%
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 20'%3E%3Cpath d='M16 3 L2.5 10 L16 17 Z' fill='%237BA651' stroke='%23fff' stroke-width='2.5' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+.bubble--grey::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 13 20'%3E%3Cpath d='M16 3 L2.5 10 L16 17 Z' fill='%237E7A7C' stroke='%23fff' stroke-width='2.5' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 
 .avatar {

@@ -1,6 +1,7 @@
 <?php
-
 namespace App\Http\Controllers;
+
+use App\Events\MemberJoined;
 
 use App\Models\ChatGroup;
 use App\Models\ChatGroupInvitation;
@@ -108,7 +109,7 @@ class CircleInvitationController extends Controller
             ->first();
 
         if ($invitation === null || $invitation->revoked_at !== null || $invitation->expires_at->isPast()) {
-            return redirect()->route('join.show', $token)->with('error', 'Undangan tidak valid.');
+            return redirect()->route('join.show', $token)->with('error', 'Invalid invitation.');
         }
 
         $circle = $invitation->group;
@@ -123,12 +124,15 @@ class CircleInvitationController extends Controller
             return redirect()->route('circles.show', $circle);
         }
 
-        $request->user()->memberships()->create([
+        $membership = $request->user()->memberships()->create([
             'group_id' => $circle->id,
             'user_id' => $user->id,
             'role' => 'member',
             'joined_at' => now(),
         ]);
+
+        // notifikasi realtime ke anggota yang sedang membuka chat circle ini
+        MemberJoined::dispatch($membership);
 
         return redirect()->route('circles.show', $circle);
     }

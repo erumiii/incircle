@@ -7,7 +7,7 @@
         {{-- Header circle --}}
         <div class="border-b border-sky-200/50" style="background: var(--bg-header);">
             <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center gap-3">
-                <a href="{{ route('circles.index') }}" class="orb orb--sm" aria-label="Kembali ke daftar circle" style="text-decoration: none;">
+                <a href="{{ route('circles.index') }}" class="orb orb--sm" aria-label="Back to circle list" style="text-decoration: none;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
                 </a>
 
@@ -19,13 +19,13 @@
                 </div>
 
                 @if ($role === 'admin')
-                    <a href="{{ route('circles.invitations', $circle) }}" class="orb orb--olive" aria-label="Kelola undangan" style="text-decoration: none;">
+                    <a href="{{ route('circles.invitations', $circle) }}" class="orb orb--olive" aria-label="Manage invitations" style="text-decoration: none;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
                     </a>
-                    <a href="{{ route('circles.members', $circle) }}" class="orb orb--purple" aria-label="Kelola anggota" style="text-decoration: none;">
+                    <a href="{{ route('circles.members', $circle) }}" class="orb orb--purple" aria-label="Manage members" style="text-decoration: none;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1-3.5 3.5-5 6.5-5s5.5 1.5 6.5 5"/><circle cx="17.5" cy="9" r="2.5"/><path d="M16 15.5c2.5 0 4.5 1.5 5.5 4.5"/></svg>
                     </a>
-                    <a href="{{ route('circles.edit', $circle) }}" class="orb orb--pink" aria-label="Pengaturan circle" style="text-decoration: none;">
+                    <a href="{{ route('circles.edit', $circle) }}" class="orb orb--pink" aria-label="Circle settings" style="text-decoration: none;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 1.56V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6h.09A1.7 1.7 0 0 0 10 3.04V3a2 2 0 1 1 4 0v.09A1.7 1.7 0 0 0 15 4.6a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9v.09a1.7 1.7 0 0 0 1.56 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg>
                     </a>
                 @endif
@@ -37,8 +37,8 @@
             <form method="POST" action="{{ route('circles.messages.store', ['circle' => $circle->id, 'page' => $messages->lastPage()]) }}" class="max-w-5xl mx-auto px-4 sm:px-6">
                 @csrf
 
-                <label for="message" class="sr-only">{{ __('Tulis pesan') }}</label>
-                <textarea id="message" name="message" class="chat-input" maxlength="2000" required placeholder="tulis pesan di {{ $circle->group_name }}..." data-autofocus-on-error></textarea>
+                <label for="message" class="sr-only">{{ __('Write a message') }}</label>
+                <textarea id="message" name="message" class="chat-input" maxlength="2000" required placeholder="type your message in {{ $circle->group_name }}..." data-autofocus-on-error></textarea>
 
                 @error('message')
                     <p class="mt-2 text-sm" style="color: #6E0A0A;">{{ $message }}</p>
@@ -55,7 +55,7 @@
             <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6" style="margin-left: 0;" id="chat-messages">
 
                 @if (session('status') === 'circle-updated')
-                    <p class="mb-4 text-sm" style="color: var(--text-muted);">Circle diperbarui.</p>
+                    <p class="mb-4 text-sm" style="color: var(--text-muted);">Circle updated.</p>
                 @endif
 
                 {{-- Template bubble realtime: markup identik dengan render server --}}
@@ -97,7 +97,7 @@
                     </div>
                 @empty
                     <p class="text-center py-10" id="chat-empty" style="color: var(--text-muted);">
-                        belum ada pesan. mulai obrolan pertama di circle ini.
+                        no messages yet. start the first conversation in this circle.
                     </p>
                 @endforelse
 
@@ -134,10 +134,21 @@
                     if (isMine) bubble.classList.add('bubble--grey');
                     bubble.querySelector('span').textContent = e.message;
                     node.querySelector('p.mt-1').textContent = new Date(e.created_at)
-                        .toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                        .toLocaleString('en-US', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
                         .replace(/\./g, ':');
 
                     container.appendChild(node);
+                    scroller.scrollTop = scroller.scrollHeight;
+                })
+                .listen('.member.joined', (e) => {
+                    // notifikasi ▶▶ username bergabung ke ruangan (gaya retro)
+                    if (!e.username) return;
+                    const p = document.createElement('p');
+                    p.className = 'join-notice';
+                    p.style.marginLeft = '100px';
+                    p.style.marginBottom = '14px';
+                    p.textContent = `${e.username} joined the room`;
+                    container.appendChild(p);
                     scroller.scrollTop = scroller.scrollHeight;
                 });
         }

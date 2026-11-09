@@ -19,7 +19,7 @@ class StoreMessageRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'message.regex' => 'Pesan tidak boleh berisi spasi saja.',
+            'message.regex' => 'Message cannot contain only whitespace.',
         ];
     }
 }

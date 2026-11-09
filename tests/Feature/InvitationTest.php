@@ -100,7 +100,7 @@ class InvitationTest extends TestCase
             'expires_at' => now()->subDay(),
         ]);
 
-        $this->actingAs($invitee)->get("/join/{$invitation->token}")->assertOk()->assertSee('Tidak Valid');
+        $this->actingAs($invitee)->get("/join/{$invitation->token}")->assertOk()->assertSee('Invalid Invitation');
         $this->actingAs($invitee)->post("/join/{$invitation->token}")
             ->assertRedirect(route('join.show', $invitation->token));
         $this->assertSame(0, ChatGroupMember::where('user_id', $invitee->id)->count());
@@ -120,7 +120,7 @@ class InvitationTest extends TestCase
             'revoked_at' => now(),
         ]);
 
-        $this->actingAs($invitee)->get("/join/{$invitation->token}")->assertOk()->assertSee('Tidak Valid');
+        $this->actingAs($invitee)->get("/join/{$invitation->token}")->assertOk()->assertSee('Invalid Invitation');
         $this->assertSame(0, ChatGroupMember::where('user_id', $invitee->id)->count());
     }
 

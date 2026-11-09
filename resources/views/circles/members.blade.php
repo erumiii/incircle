@@ -1,14 +1,14 @@
 <x-app-layout>
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="flex items-center gap-3 mb-6">
-            <a href="{{ route('circles.show', $circle) }}" class="orb orb--sm" aria-label="Kembali ke circle" style="text-decoration: none;">
+            <a href="{{ route('circles.show', $circle) }}" class="orb orb--sm" aria-label="Back to circle" style="text-decoration: none;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
             </a>
-            <h1 class="text-2xl font-semibold" style="color: var(--text-on-light);">Anggota — {{ $circle->group_name }}</h1>
+            <h1 class="text-2xl font-semibold" style="color: var(--text-on-light);">Members — {{ $circle->group_name }}</h1>
         </div>
 
         @if (session('status') === 'member-kicked')
-            <p class="mb-4 px-4 py-3 rounded-lg text-sm" style="background: #BFE3C4; color: #0B6B1C;">Anggota dikeluarkan.</p>
+            <p class="mb-4 px-4 py-3 rounded-lg text-sm" style="background: #BFE3C4; color: #0B6B1C;">Member removed.</p>
         @endif
         @if (session('error'))
             <p class="mb-4 px-4 py-3 rounded-lg text-sm" style="background: #F0B8B0; color: #6E0A0A;">{{ session('error') }}</p>
@@ -20,7 +20,7 @@
                     <tr class="text-left" style="background: var(--bg-header);">
                         <th class="px-4 py-3 font-semibold uppercase text-xs tracking-widest" style="color: var(--text-on-light);">Username</th>
                         <th class="px-4 py-3 font-semibold uppercase text-xs tracking-widest" style="color: var(--text-on-light);">Role</th>
-                        <th class="px-4 py-3 font-semibold uppercase text-xs tracking-widest" style="color: var(--text-on-light);">Bergabung</th>
+                        <th class="px-4 py-3 font-semibold uppercase text-xs tracking-widest" style="color: var(--text-on-light);">Joined</th>
                         <th class="px-4 py-3"></th>
                     </tr>
                 </thead>
@@ -45,10 +45,10 @@
                                 {{-- F7: admin tidak bisa mengeluarkan diri sendiri/admin lain --}}
                                 @if ($member->role !== 'admin')
                                     <form method="POST" action="{{ route('circles.members.kick', ['circle' => $circle->id, 'member' => $member->id]) }}"
-                                          onsubmit="return confirm('Keluarkan {{ $member->user->username }} dari circle ini?');">
+                                          onsubmit="return confirm('Remove {{ $member->user->username }} from this circle?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="orb orb--red orb--sm" aria-label="Keluarkan {{ $member->user->username }}" title="Keluarkan">
+                                        <button type="submit" class="orb orb--red orb--sm" aria-label="Remove {{ $member->user->username }}" title="Remove">
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
                                         </button>
                                     </form>
