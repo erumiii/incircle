@@ -1,0 +1,148 @@
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: incircle
+      MYSQL_USER: incircle
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Set DB_ROOT_PASSWORD in .env}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # One-shot: jalankan migrasi sebelum app start
+  migrate:
+    build: .
+    restart: "no"
+    command: php artisan migrate --force
+    env_file: .env
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: incircle
+      DB_USERNAME: incircle
+      DB_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  app:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: incircle
+      DB_USERNAME: incircle
+      DB_PASSWORD: ${DB_PASSWORD}
+      BROADCAST_CONNECTION: reverb
+      REVERB_APP_ID: incircle
+      REVERB_HOST: ${REVERB_PUBLIC_HOST:-localhost}
+      REVERB_PORT: "8080"
+      REVERB_SCHEME: https
+      QUEUE_CONNECTION: database
+      SESSION_DRIVER: database
+    healthcheck:
+      # End-to-end lewat endpoint health Laravel (/up): nginx → fpm → MySQL.
+      # Kalau /up 200, seluruh rantai request sehat.
+      test: ["CMD", "curl", "-fsS", "http://nginx:8080/up"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      mysql:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+  reverb:
+    build: .
+    restart: unless-stopped
+    command: php artisan reverb:start --host=0.0.0.0 --port=8080
+    env_file: .env
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: incircle
+      DB_USERNAME: incircle
+      DB_PASSWORD: ${DB_PASSWORD}
+      BROADCAST_CONNECTION: reverb
+      REVERB_APP_ID: incircle
+      REVERB_HOST: ${REVERB_PUBLIC_HOST:-localhost}
+      REVERB_PORT: "8080"
+      REVERB_SCHEME: https
+    healthcheck:
+      # WebSocket Reverb: TCP port 8080 accept koneksi (busybox nc)
+      test: ["CMD", "nc", "-z", "127.0.0.1", "8080"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  queue:
+    build: .
+    restart: unless-stopped
+    command: php artisan queue:work --sleep=1 --tries=3
+    env_file: .env
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: incircle
+      DB_USERNAME: incircle
+      DB_PASSWORD: ${DB_PASSWORD}
+      QUEUE_CONNECTION: database
+    healthcheck:
+      # Worker queue: proses queue:work masih hidup (busybox pgrep)
+      test: ["CMD", "pgrep", "-f", "queue:work"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  nginx:
+    build:
+      context: .
+      target: nginx
+    restart: unless-stopped
+    ports:
+      - "80:8080"   # produksi HTTPS: 443:8080 + blok ssl di nginx.conf
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    healthcheck:
+      # Distroless Chainguard nginx: tanpa shell/curl/wget — tidak ada client HTTP.
+      # nginx -t (exec form, tanpa shell) memastikan binary + config termuat.
+      # shortcut: bukan cek konektivitas end-to-end; kalau butuh lebih, ganti base image yang punya curl/wget
+      test: ["CMD", "nginx", "-t", "-c", "/etc/nginx/nginx.conf"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      - app
+      - reverb
+
+volumes:
+  mysql_data:
