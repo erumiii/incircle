@@ -21,5 +21,5 @@ inCircle is a chat website designed for socializing with friends within specific
 6. Application running successfully
 
 # Others
-- [Read my blog](https://medium.com/@iambonitheuri/the-art-of-writing-meaningful-git-commit-messages-a56887a4cb49?sharedUserId=keenanemzed202)
+- [Read my blog](https://medium.com/@keenanemzed202/cloud-services-mid-exam-project-b0236f0b70f2?sharedUserId=keenanemzed202)
 - [Demo video](https://youtu.be/p687dCZJX_g) 
