@@ -6,6 +6,12 @@
 ## Overview
 inCircle is a chat website designed for socializing with friends within specific, dedicated groups (or "circles"). It provides a private space, isolated from other group chats. To ensure this isolation, users can create group chats that are accessible only by invitation. inCircle offers a solution for communities or groups that require a private social space. I drew inspiration from the anime Durarara!!, in which the main character creates a chat and microblogging website for his own organization.
 
+## Prerequisites
+1. PHP >= 8.2
+2. Node >= 22
+3. MySQL >= 8.4
+4. Docker
+
 ## How to Install
 1. Clone the repo ```git clone https://github.com/erumiii/incircle.git```
 2. Copy the .env.example to .env ```cp .env.example .env``` 
