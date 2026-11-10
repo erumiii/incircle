@@ -33,7 +33,14 @@ services:
         condition: service_healthy
 
   app:
-    build: .
+    build:
+      context: .
+      args:
+        # Sama dengan service nginx — app image juga bake bundle Vite (manifest @vite harus cocok dengan file yang diserve nginx)
+        VITE_REVERB_HOST: ${REVERB_PUBLIC_HOST:-localhost}
+        VITE_REVERB_PORT: 80
+        VITE_REVERB_SCHEME: ${REVERB_PUBLIC_SCHEME:-http}
+        VITE_REVERB_APP_KEY: ${REVERB_APP_KEY:-719470c5adb0722b3c2f}
     restart: unless-stopped
     env_file: .env
     environment:
@@ -46,15 +53,15 @@ services:
       DB_USERNAME: incircle
       DB_PASSWORD: ${DB_PASSWORD}
       BROADCAST_CONNECTION: reverb
+      # Server-side: broadcaster HTTP ke container reverb di network Docker
       REVERB_APP_ID: incircle
-      REVERB_HOST: ${REVERB_PUBLIC_HOST:-localhost}
+      REVERB_HOST: reverb
       REVERB_PORT: "8080"
-      REVERB_SCHEME: https
+      REVERB_SCHEME: http
       QUEUE_CONNECTION: database
       SESSION_DRIVER: database
     healthcheck:
-      # End-to-end lewat endpoint health Laravel (/up): nginx → fpm → MySQL.
-      # Kalau /up 200, seluruh rantai request sehat.
+      # End-to-end lewat endpoint health Laravel (/up): nginx → fpm → MySQL
       test: ["CMD", "curl", "-fsS", "http://nginx:8080/up"]
       interval: 30s
       timeout: 5s
@@ -82,9 +89,9 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       BROADCAST_CONNECTION: reverb
       REVERB_APP_ID: incircle
-      REVERB_HOST: ${REVERB_PUBLIC_HOST:-localhost}
+      REVERB_HOST: reverb
       REVERB_PORT: "8080"
-      REVERB_SCHEME: https
+      REVERB_SCHEME: http
     healthcheck:
       # WebSocket Reverb: TCP port 8080 accept koneksi (busybox nc)
       test: ["CMD", "nc", "-z", "127.0.0.1", "8080"]
@@ -110,6 +117,12 @@ services:
       DB_DATABASE: incircle
       DB_USERNAME: incircle
       DB_PASSWORD: ${DB_PASSWORD}
+      BROADCAST_CONNECTION: reverb
+      # Server-side: sama dengan app — worker kirim broadcast ke container reverb
+      REVERB_APP_ID: incircle
+      REVERB_HOST: reverb
+      REVERB_PORT: "8080"
+      REVERB_SCHEME: http
       QUEUE_CONNECTION: database
     healthcheck:
       # Worker queue: proses queue:work masih hidup (busybox pgrep)
@@ -126,6 +139,12 @@ services:
     build:
       context: .
       target: nginx
+      args:
+        # Browser-facing: WebSocket lewat nginx (path /app/), host+port sama dengan web
+        VITE_REVERB_HOST: ${REVERB_PUBLIC_HOST:-localhost}
+        VITE_REVERB_PORT: 80
+        VITE_REVERB_SCHEME: ${REVERB_PUBLIC_SCHEME:-http}
+        VITE_REVERB_APP_KEY: ${REVERB_APP_KEY:-719470c5adb0722b3c2f}
     restart: unless-stopped
     ports:
       - "80:8080"   # produksi HTTPS: 443:8080 + blok ssl di nginx.conf
